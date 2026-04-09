@@ -13,24 +13,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ── Checkout ──────────────────────────────────────────────────────────
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ── Java 17 (exigido pelo sdkmanager 16+) ─────────────────────────────
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      # ── Haxe ──────────────────────────────────────────────────────────────
       - name: Setup Haxe
         uses: krdlab/setup-haxe@v1
         with:
           haxe-version: 4.3.4
 
-      # ── Haxelibs ──────────────────────────────────────────────────────────
       - name: Install haxelibs
         run: |
           haxelib install lime         --quiet
@@ -43,27 +39,22 @@ jobs:
           haxelib install polymod       --quiet
           haxelib install newgrounds    --quiet
 
-      # ── Android SDK + NDK r25 ─────────────────────────────────────────────
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Install NDK r25
         run: sdkmanager "ndk;25.2.9519653"
 
-      # ── Configura o lime escrevendo o config direto (sem wizard interativo) ─
-      - name: Configure lime for Android
+      # lime setup android é interativo — passa as respostas via printf.
+      # Ordem das perguntas: SDK path, NDK path, Java path.
+      - name: Setup lime for Android
         run: |
-          mkdir -p ~/.lime
-          cat > ~/.lime/config.xml << LIMEEOF
-          <?xml version="1.0" encoding="utf-8"?>
-          <defines>
-            <set name="ANDROID_SDK"      value="$ANDROID_SDK_ROOT" />
-            <set name="ANDROID_NDK_ROOT" value="$ANDROID_SDK_ROOT/ndk/25.2.9519653" />
-            <set name="JAVA_HOME"        value="$JAVA_HOME" />
-          </defines>
-          LIMEEOF
+          printf "%s\n%s\n%s\n" \
+            "$ANDROID_SDK_ROOT" \
+            "$ANDROID_SDK_ROOT/ndk/25.2.9519653" \
+            "$JAVA_HOME" \
+          | haxelib run lime setup android
 
-      # ── Cache do hxcpp ────────────────────────────────────────────────────
       - name: Cache hxcpp
         uses: actions/cache@v4
         with:
@@ -71,11 +62,9 @@ jobs:
           key: hxcpp-android-${{ runner.os }}-${{ hashFiles('Project.xml') }}
           restore-keys: hxcpp-android-${{ runner.os }}-
 
-      # ── Build ─────────────────────────────────────────────────────────────
       - name: Build APK (release)
         run: haxelib run lime build android -release
 
-      # ── Upload APK ────────────────────────────────────────────────────────
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
