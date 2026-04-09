@@ -11,29 +11,19 @@
 	     version="0.2.7.1"
 	     company="ninjamuffin99" />
 
-	<!-- Switch Export with Unique ApplicationID -->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
-
-	<!-- Preloader padrão do Flixel -->
 	<app preloader="flixel.system.FlxPreloader" />
-
-	<!-- Flash (legado) -->
 	<set name="SWF_VERSION" value="11.8" />
 
 	<!-- __________________________ Android Settings ___________________________ -->
 
-	<!--
-		minSdkVersion 21 = Android 5.0+ (Lollipop) — base mínima recomendada pra OpenFL/HXCPP.
-		targetSdkVersion 33 = Android 13 — exigido pela Play Store atualmente.
-	-->
 	<android targetSdkVersion="33" minSdkVersion="21" if="android" />
 
 	<!--
-		Compile para armv7 (32-bit) e arm64 (64-bit).
-		OBRIGATÓRIO para Play Store aceitar o APK.
-		Sem isso o lime pode compilar só pra uma arquitetura.
+		Duas tags separadas — lime não aceita "armv7,arm64" numa só tag.
 	-->
-	<architecture name="armv7,arm64" if="android" />
+	<architecture name="armv7" if="android" />
+	<architecture name="arm64" if="android" />
 
 	<!-- Permissões Android -->
 	<permission name="android.permission.INTERNET"               if="android" />
@@ -43,28 +33,15 @@
 
 	<!-- __________________________ iOS Settings _______________________________ -->
 
-	<!-- Deployment mínimo iOS 12 — compatível com OpenFL moderno -->
 	<ios deployment="12" if="ios" />
 
 	<!-- __________________________ Window Settings ___________________________ -->
 
-	<!-- Configuração base para todos os targets -->
 	<window width="1280" height="720" fps="60" background="#000000" hardware="true" vsync="false" />
-
-	<!-- HTML5 -->
-	<window if="html5" resizable="true" />
-
-	<!-- Desktop -->
-	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false" />
-
-	<!--
-		Mobile: width/height 0 = usa a resolução nativa do dispositivo.
-		fullscreen true é obrigatório no Android.
-	-->
-	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false" />
-
-	<!-- Switch -->
-	<window if="switch" orientation="landscape" fullscreen="true" width="0" height="0" resizable="true" />
+	<window if="html5"    resizable="true" />
+	<window if="desktop"  orientation="landscape" fullscreen="false" resizable="true" vsync="false" />
+	<window if="mobile"   orientation="landscape" fullscreen="true"  width="0" height="0" resizable="false" />
+	<window if="switch"   orientation="landscape" fullscreen="true"  width="0" height="0" resizable="true" />
 
 	<!-- ___________________________ Path Settings ____________________________ -->
 
@@ -76,23 +53,13 @@
 
 	<!-- __________________________ Asset Settings ____________________________ -->
 
-	<!--
-		Áudio por plataforma:
-		  - Web    → .mp3  (browsers rejeitam OGG em alguns casos)
-		  - iOS    → .mp3  (iOS não decodifica OGG nativamente)
-		  - Android / Desktop → .ogg
-	-->
-
 	<!-- Preload assets -->
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web" />
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="ios" />
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" if="android" />
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" if="desktop" />
 
-	<!--
-		PRELOAD_ALL: em mobile carrega tudo de uma vez → crash por OOM.
-		Força NO_PRELOAD_ALL em mobile/web; habilita só em desktop/switch.
-	-->
+	<!-- PRELOAD_ALL apenas em desktop/switch; mobile força NO_PRELOAD_ALL -->
 	<define name="PRELOAD_ALL"    if="desktop" />
 	<define name="PRELOAD_ALL"    if="switch"  />
 	<define name="NO_PRELOAD_ALL" if="mobile"  />
@@ -152,10 +119,7 @@
 	<assets path="assets/week5" library="week5" exclude="*.mp3" if="android" />
 	<assets path="assets/week5" library="week5" exclude="*.mp3" if="desktop" />
 
-	<!-- Fontes embutidas (obrigatório no mobile — sem acesso ao sistema de fontes) -->
 	<assets path="assets/fonts" embed="true" />
-
-	<!-- Changelog -->
 	<assets path="CHANGELOG.md" rename="changelog.txt" />
 
 	<!-- ____________________________ Libraries ________________________________ -->
@@ -169,50 +133,29 @@
 	<haxelib name="actuate"        />
 	<haxelib name="polymod"        />
 	<haxelib name="newgrounds"     />
-
-	<!-- WebM: só desktop (extension não suporta mobile) -->
 	<haxelib name="extension-webm" if="desktop" />
-
-	<!-- Discord RPC: só Windows -->
 	<haxelib name="discord_rpc"    if="windows" />
+	<haxelib name="faxe"           if="switch"  />
 
-	<!-- Switch -->
-	<haxelib name="faxe"           if="switch" />
-
-	<!-- WebGL/next: só web e desktop — no mobile usa GLES nativo -->
 	<setenv name="next" if="web"     />
 	<setenv name="next" if="desktop" />
 
 	<!-- ___________________________ Haxe Defines _____________________________ -->
 
-	<!-- Inputs: mobile não tem mouse nem teclado; desktop não tem touch -->
-	<haxedef name="FLX_NO_MOUSE"    if="mobile"  />
-	<haxedef name="FLX_NO_KEYBOARD" if="mobile"  />
-	<haxedef name="FLX_NO_TOUCH"    if="desktop" />
-
-	<!-- Focus lost: o ciclo de vida do Android cuida disso -->
-	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
-
-	<!-- Debug off em release -->
-	<haxedef name="FLX_NO_DEBUG" unless="debug" />
-
-	<!-- Nape performance -->
-	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
-
-	<!--
-		Stack size maior evita stack overflow em Android em cenas pesadas.
-		Valor em bytes: 65536 = 64 KB por thread nativa.
-	-->
+	<haxedef name="FLX_NO_MOUSE"              if="mobile"  />
+	<haxedef name="FLX_NO_KEYBOARD"           if="mobile"  />
+	<haxedef name="FLX_NO_TOUCH"              if="desktop" />
+	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN"              />
+	<haxedef name="FLX_NO_DEBUG"              unless="debug" />
+	<haxedef name="NAPE_RELEASE_BUILD"        unless="debug" />
 	<haxedef name="HXCPP_STACK_SIZE" value="65536" if="android" />
-
-	<!-- Newgrounds login -->
-	<haxedef name="NG_LOGIN" if="newgrounds" />
+	<haxedef name="NG_LOGIN"                  if="newgrounds" />
 
 	<!-- _______________________________ Icons _________________________________ -->
 
-	<icon path="art/icon16.png"  size="16" />
-	<icon path="art/icon32.png"  size="32" />
-	<icon path="art/icon64.png"  size="64" />
-	<icon path="art/iconOG.png"             />
+	<icon path="art/icon16.png" size="16" />
+	<icon path="art/icon32.png" size="32" />
+	<icon path="art/icon64.png" size="64" />
+	<icon path="art/iconOG.png"            />
 
 </project>
