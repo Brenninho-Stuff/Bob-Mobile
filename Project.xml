@@ -1,166 +1,218 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
+
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Bob's Onslaught" file="BOB" packageName="com.ninjamuffin99.funkinbob" package="com.ninjamuffin99.funkinbob" main="Main" version="0.2.7.1" company="ninjamuffin99" />
+	<app title="Bob's Onslaught"
+	     file="BOB"
+	     packageName="com.ninjamuffin99.funkinbob"
+	     package="com.ninjamuffin99.funkinbob"
+	     main="Main"
+	     version="0.2.7.1"
+	     company="ninjamuffin99" />
 
-	<!--Switch Export with Unique ApplicationID and Icon-->
+	<!-- Switch Export with Unique ApplicationID -->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
 
-	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
-		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
-	<!-- <app preloader="Preloader" resizable="true" /> -->
+	<!-- Preloader padrão do Flixel -->
 	<app preloader="flixel.system.FlxPreloader" />
 
-	<!--Minimum without FLX_NO_GAMEPAD: 11.8, without FLX_NO_NATIVE_CURSOR: 11.2-->
+	<!-- Flash (legado) -->
 	<set name="SWF_VERSION" value="11.8" />
 
-	<!-- ____________________________ Window Settings ___________________________ -->
+	<!-- __________________________ Android Settings ___________________________ -->
 
-	<!--These window settings apply to all targets-->
-	<window width="1280" height="720" fps="" background="#000000" hardware="true" vsync="false" />
+	<!--
+		minSdkVersion 21 = Android 5.0+ (Lollipop) — base mínima recomendada pra OpenFL/HXCPP.
+		targetSdkVersion 33 = Android 13 — exigido pela Play Store atualmente.
+	-->
+	<android targetSdkVersion="33" minSdkVersion="21" if="android" />
 
-	<!--HTML5-specific-->
+	<!--
+		Compile para armv7 (32-bit) e arm64 (64-bit).
+		OBRIGATÓRIO para Play Store aceitar o APK.
+		Sem isso o lime pode compilar só pra uma arquitetura.
+	-->
+	<architecture name="armv7,arm64" if="android" />
+
+	<!-- Permissões Android -->
+	<permission name="android.permission.INTERNET"               if="android" />
+	<permission name="android.permission.VIBRATE"                if="android" />
+	<permission name="android.permission.READ_EXTERNAL_STORAGE"  if="android" />
+	<permission name="android.permission.WRITE_EXTERNAL_STORAGE" if="android" />
+
+	<!-- __________________________ iOS Settings _______________________________ -->
+
+	<!-- Deployment mínimo iOS 12 — compatível com OpenFL moderno -->
+	<ios deployment="12" if="ios" />
+
+	<!-- __________________________ Window Settings ___________________________ -->
+
+	<!-- Configuração base para todos os targets -->
+	<window width="1280" height="720" fps="60" background="#000000" hardware="true" vsync="false" />
+
+	<!-- HTML5 -->
 	<window if="html5" resizable="true" />
 
-	<!--Desktop-specific-->
-	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
+	<!-- Desktop -->
+	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false" />
 
-	<!--Mobile-specific-->
-	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false"/>
+	<!--
+		Mobile: width/height 0 = usa a resolução nativa do dispositivo.
+		fullscreen true é obrigatório no Android.
+	-->
+	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false" />
 
-	<!--Switch-specific-->
+	<!-- Switch -->
 	<window if="switch" orientation="landscape" fullscreen="true" width="0" height="0" resizable="true" />
 
-	<!-- _____________________________ Path Settings ____________________________ -->
+	<!-- ___________________________ Path Settings ____________________________ -->
 
-	<set name="BUILD_DIR" value="exportJon/debug" if="debug" />
+	<set name="BUILD_DIR" value="exportJon/debug"   if="debug" />
 	<set name="BUILD_DIR" value="exportJon/release" unless="debug" />
-	<set name="BUILD_DIR" value="exportJon/32bit" if="32bit" />
+	<set name="BUILD_DIR" value="exportJon/32bit"   if="32bit" />
 
 	<classpath name="sourceJon" />
 
-	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
-	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
-	
-	<!-- <define name="PRELOAD_ALL" /> -->
-	<define name="PRELOAD_ALL" unless="web" />
-	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
-	
-	<section if="PRELOAD_ALL">
-		<library name="songs"    preload="true" />
-		<library name="shared"   preload="true" />
-		<library name="week2"    preload="true" />
-		<library name="week3"    preload="true" />
-		<library name="week4"    preload="true" />
-		<library name="week5"    preload="true" />
-	</section>
-	
-	<section if="NO_PRELOAD_ALL">
-		<library name="songs"    preload="false" />
-		<library name="shared"   preload="false" />
-		<library name="week2"    preload="false" />
-		<library name="week3"    preload="false" />
-		<library name="week4"    preload="false" />
-		<library name="week5"    preload="false" />
-	</section>
-	
-	<assets path="assets/songs"    library="songs"    exclude="*.ogg" if="web"/>
-	<assets path="assets/songs"    library="songs"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/shared"   library="shared"   exclude="*.ogg" if="web"/>
-	<assets path="assets/shared"   library="shared"   exclude="*.mp3" unless="web"/>
-	<assets path="assets/week2"    library="week2"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week2"    library="week2"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week3"    library="week3"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week3"    library="week3"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week4"    library="week4"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week4"    library="week4"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week5"    library="week5"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week5"    library="week5"    exclude="*.mp3" unless="web"/>
-	
+	<!-- __________________________ Asset Settings ____________________________ -->
 
-	<!-- <template path='mods' /> -->
-	
-	<assets path="CHANGELOG.md" rename='changelog.txt'/>
-
-	<!-- NOTE FOR FUTURE SELF SINCE FONTS ARE ALWAYS FUCKY 
-		TO FIX ONE OF THEM, I CONVERTED IT TO OTF. DUNNO IF YOU NEED TO
-		THEN UHHH I USED THE NAME OF THE FONT WITH SETFORMAT() ON THE TEXT!!!
-		NOT USING A DIRECT THING TO THE ASSET!!!
+	<!--
+		Áudio por plataforma:
+		  - Web    → .mp3  (browsers rejeitam OGG em alguns casos)
+		  - iOS    → .mp3  (iOS não decodifica OGG nativamente)
+		  - Android / Desktop → .ogg
 	-->
-	<assets path="assets/fonts" embed='true'/>
-	<!-- _______________________________ Libraries ______________________________ -->
 
-	<haxelib name="flixel" />
-	
-	<!-- if anything doesnt work its this -->
-	<setenv name="next" />
-	
-	<haxedev set='webgl' />
+	<!-- Preload assets -->
+	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web" />
+	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="ios" />
+	<assets path="assets/preload" rename="assets" exclude="*.mp3" if="android" />
+	<assets path="assets/preload" rename="assets" exclude="*.mp3" if="desktop" />
 
-	<!--In case you want to use the addons package-->
-	<haxelib name="flixel-addons" />
-	<haxelib name="hscript" />
-	<haxelib name="actuate" />
-    <haxelib name="extension-webm" if="desktop" />
+	<!--
+		PRELOAD_ALL: em mobile carrega tudo de uma vez → crash por OOM.
+		Força NO_PRELOAD_ALL em mobile/web; habilita só em desktop/switch.
+	-->
+	<define name="PRELOAD_ALL"    if="desktop" />
+	<define name="PRELOAD_ALL"    if="switch"  />
+	<define name="NO_PRELOAD_ALL" if="mobile"  />
+	<define name="NO_PRELOAD_ALL" if="web"     />
 
-	<!--In case you want to use the ui package-->
-	<haxelib name="flixel-ui" />
-	<haxelib name="newgrounds"/>
-	<haxelib name="faxe" if='switch'/>
-	<haxelib name="polymod"/>
-	<haxelib name="discord_rpc" if="windows"/>
-	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
+	<section if="PRELOAD_ALL">
+		<library name="songs"  preload="true" />
+		<library name="shared" preload="true" />
+		<library name="week2"  preload="true" />
+		<library name="week3"  preload="true" />
+		<library name="week4"  preload="true" />
+		<library name="week5"  preload="true" />
+	</section>
 
-	<!-- <haxelib name="markdown" /> -->
-	<!-- <haxelib name="HtmlParser" /> -->
+	<section if="NO_PRELOAD_ALL">
+		<library name="songs"  preload="false" />
+		<library name="shared" preload="false" />
+		<library name="week2"  preload="false" />
+		<library name="week3"  preload="false" />
+		<library name="week4"  preload="false" />
+		<library name="week5"  preload="false" />
+	</section>
 
-	<!--In case you want to use nape with flixel-->
-	<!--<haxelib name="nape-haxe4" />-->
+	<!-- Songs -->
+	<assets path="assets/songs" library="songs" exclude="*.ogg" if="web" />
+	<assets path="assets/songs" library="songs" exclude="*.ogg" if="ios" />
+	<assets path="assets/songs" library="songs" exclude="*.mp3" if="android" />
+	<assets path="assets/songs" library="songs" exclude="*.mp3" if="desktop" />
 
-	<!-- ______________________________ Haxedefines _____________________________ -->
+	<!-- Shared -->
+	<assets path="assets/shared" library="shared" exclude="*.ogg" if="web" />
+	<assets path="assets/shared" library="shared" exclude="*.ogg" if="ios" />
+	<assets path="assets/shared" library="shared" exclude="*.mp3" if="android" />
+	<assets path="assets/shared" library="shared" exclude="*.mp3" if="desktop" />
 
-	<!--Enable the Flixel core recording system-->
-	<!--<haxedef name="FLX_RECORD" />-->
+	<!-- Week 2 -->
+	<assets path="assets/week2" library="week2" exclude="*.ogg" if="web" />
+	<assets path="assets/week2" library="week2" exclude="*.ogg" if="ios" />
+	<assets path="assets/week2" library="week2" exclude="*.mp3" if="android" />
+	<assets path="assets/week2" library="week2" exclude="*.mp3" if="desktop" />
 
-	<!--Disable the right and middle mouse buttons-->
-	<!-- <haxedef name="FLX_NO_MOUSE_ADVANCED" /> -->
+	<!-- Week 3 -->
+	<assets path="assets/week3" library="week3" exclude="*.ogg" if="web" />
+	<assets path="assets/week3" library="week3" exclude="*.ogg" if="ios" />
+	<assets path="assets/week3" library="week3" exclude="*.mp3" if="android" />
+	<assets path="assets/week3" library="week3" exclude="*.mp3" if="desktop" />
 
-	<!--Disable the native cursor API on Flash-->
-	<!--<haxedef name="FLX_NO_NATIVE_CURSOR" />-->
+	<!-- Week 4 -->
+	<assets path="assets/week4" library="week4" exclude="*.ogg" if="web" />
+	<assets path="assets/week4" library="week4" exclude="*.ogg" if="ios" />
+	<assets path="assets/week4" library="week4" exclude="*.mp3" if="android" />
+	<assets path="assets/week4" library="week4" exclude="*.mp3" if="desktop" />
 
-	<!--Optimise inputs, be careful you will get null errors if you don't use conditionals in your game-->
-	<!-- <haxedef name="FLX_NO_MOUSE" if="mobile" /> -->
-	<!-- <haxedef name="FLX_NO_KEYBOARD" if="mobile" /> -->
-	<!-- <haxedef name="FLX_NO_TOUCH" if="desktop" /> -->
-	<!--<haxedef name="FLX_NO_GAMEPAD" />-->
+	<!-- Week 5 -->
+	<assets path="assets/week5" library="week5" exclude="*.ogg" if="web" />
+	<assets path="assets/week5" library="week5" exclude="*.ogg" if="ios" />
+	<assets path="assets/week5" library="week5" exclude="*.mp3" if="android" />
+	<assets path="assets/week5" library="week5" exclude="*.mp3" if="desktop" />
 
-	<!--Disable the Flixel core sound tray-->
-	<!--<haxedef name="FLX_NO_SOUND_TRAY" />-->
+	<!-- Fontes embutidas (obrigatório no mobile — sem acesso ao sistema de fontes) -->
+	<assets path="assets/fonts" embed="true" />
 
-	<!--Disable the Flixel sound management code-->
-	<!--<haxedef name="FLX_NO_SOUND_SYSTEM" />-->
+	<!-- Changelog -->
+	<assets path="CHANGELOG.md" rename="changelog.txt" />
 
-	<!--Disable the Flixel core focus lost screen-->
+	<!-- ____________________________ Libraries ________________________________ -->
+
+	<haxelib name="openfl"         />
+	<haxelib name="lime"           />
+	<haxelib name="flixel"         />
+	<haxelib name="flixel-addons"  />
+	<haxelib name="flixel-ui"      />
+	<haxelib name="hscript"        />
+	<haxelib name="actuate"        />
+	<haxelib name="polymod"        />
+	<haxelib name="newgrounds"     />
+
+	<!-- WebM: só desktop (extension não suporta mobile) -->
+	<haxelib name="extension-webm" if="desktop" />
+
+	<!-- Discord RPC: só Windows -->
+	<haxelib name="discord_rpc"    if="windows" />
+
+	<!-- Switch -->
+	<haxelib name="faxe"           if="switch" />
+
+	<!-- WebGL/next: só web e desktop — no mobile usa GLES nativo -->
+	<setenv name="next" if="web"     />
+	<setenv name="next" if="desktop" />
+
+	<!-- ___________________________ Haxe Defines _____________________________ -->
+
+	<!-- Inputs: mobile não tem mouse nem teclado; desktop não tem touch -->
+	<haxedef name="FLX_NO_MOUSE"    if="mobile"  />
+	<haxedef name="FLX_NO_KEYBOARD" if="mobile"  />
+	<haxedef name="FLX_NO_TOUCH"    if="desktop" />
+
+	<!-- Focus lost: o ciclo de vida do Android cuida disso -->
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
 
-	<!--Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode!-->
+	<!-- Debug off em release -->
 	<haxedef name="FLX_NO_DEBUG" unless="debug" />
 
-	<!--Enable this for Nape release builds for a serious peformance improvement-->
+	<!-- Nape performance -->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 
-	<!-- _________________________________ Custom _______________________________ -->
+	<!--
+		Stack size maior evita stack overflow em Android em cenas pesadas.
+		Valor em bytes: 65536 = 64 KB por thread nativa.
+	-->
+	<haxedef name="HXCPP_STACK_SIZE" value="65536" if="android" />
 
-	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
-	
-	<icon path="art/icon16.png" size='16'/>
-	<icon path="art/icon32.png" size='32'/>
-	<icon path="art/icon64.png" size='64'/>
-	<icon path="art/iconOG.png" />
-
-
-	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
+	<!-- Newgrounds login -->
 	<haxedef name="NG_LOGIN" if="newgrounds" />
-	
+
+	<!-- _______________________________ Icons _________________________________ -->
+
+	<icon path="art/icon16.png"  size="16" />
+	<icon path="art/icon32.png"  size="32" />
+	<icon path="art/icon64.png"  size="64" />
+	<icon path="art/iconOG.png"             />
+
 </project>
