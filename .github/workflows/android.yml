@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 17
 
       # ── Haxe ──────────────────────────────────────────────────────────────
       - name: Setup Haxe
@@ -77,4 +77,3 @@ jobs:
           name: BobOnslaught-Android
           path: exportJon/release/android/bin/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
-          
