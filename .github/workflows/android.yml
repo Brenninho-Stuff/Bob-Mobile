@@ -17,7 +17,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ── Java 11 (exigido pelo Android SDK) ────────────────────────────────
+      # ── Java 17 (exigido pelo sdkmanager 16+) ─────────────────────────────
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -33,16 +33,15 @@ jobs:
       # ── Haxelibs ──────────────────────────────────────────────────────────
       - name: Install haxelibs
         run: |
-          haxelib install lime        --quiet
-          haxelib install openfl       --quiet
-          haxelib install flixel       --quiet
+          haxelib install lime         --quiet
+          haxelib install openfl        --quiet
+          haxelib install flixel        --quiet
           haxelib install flixel-addons --quiet
-          haxelib install flixel-ui    --quiet
-          haxelib install hscript      --quiet
-          haxelib install actuate      --quiet
-          haxelib install polymod      --quiet
-          haxelib install newgrounds   --quiet
-          haxelib run lime setup
+          haxelib install flixel-ui     --quiet
+          haxelib install hscript       --quiet
+          haxelib install actuate       --quiet
+          haxelib install polymod       --quiet
+          haxelib install newgrounds    --quiet
 
       # ── Android SDK + NDK r25 ─────────────────────────────────────────────
       - name: Setup Android SDK
@@ -51,14 +50,20 @@ jobs:
       - name: Install NDK r25
         run: sdkmanager "ndk;25.2.9519653"
 
-      # ── Configura o lime pra usar o NDK certo ─────────────────────────────
-      - name: Configure lime Android
+      # ── Configura o lime escrevendo o config direto (sem wizard interativo) ─
+      - name: Configure lime for Android
         run: |
-          haxelib run lime config ANDROID_SDK  $ANDROID_SDK_ROOT
-          haxelib run lime config ANDROID_NDK_ROOT $ANDROID_SDK_ROOT/ndk/25.2.9519653
-          haxelib run lime config JAVA_HOME    $JAVA_HOME
+          mkdir -p ~/.lime
+          cat > ~/.lime/config.xml << LIMEEOF
+          <?xml version="1.0" encoding="utf-8"?>
+          <defines>
+            <set name="ANDROID_SDK"      value="$ANDROID_SDK_ROOT" />
+            <set name="ANDROID_NDK_ROOT" value="$ANDROID_SDK_ROOT/ndk/25.2.9519653" />
+            <set name="JAVA_HOME"        value="$JAVA_HOME" />
+          </defines>
+          LIMEEOF
 
-      # ── Cache do hxcpp (acelera compilações futuras) ──────────────────────
+      # ── Cache do hxcpp ────────────────────────────────────────────────────
       - name: Cache hxcpp
         uses: actions/cache@v4
         with:
